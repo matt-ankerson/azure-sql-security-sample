@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Contoso Clinic</title>
+    <title>@ViewBag.Title - Contoso Retail</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
@@ -24,7 +24,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Patients", "Index", "Patients")</li>
+                    <li>@Html.ActionLink("Customers", "Index", "Patients")</li>
                     <li>@Html.ActionLink("Visits", "Index", "Visits")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")

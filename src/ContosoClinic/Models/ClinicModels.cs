@@ -15,6 +15,7 @@ namespace ContosoClinic.Models
         [StringLength(11)]
         [Column(TypeName = "char")]
         [Required]
+        [Display(Name = "Credit Card No.")]
         public string SSN { get; set; }
 
         [StringLength(50)]
