@@ -1,6 +1,6 @@
 #Contoso Clinic Demo Application 
 
-# Note: This demo application has been modified to demonstrate a slightly different business scenario.
+### Note: This demo application has been modified to demonstrate a slightly different business scenario.
 
 Find the *real* working version here: <https://github.com/Microsoft/azure-sql-security-sample>
 
