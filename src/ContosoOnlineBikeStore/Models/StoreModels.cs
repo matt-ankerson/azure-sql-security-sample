@@ -58,7 +58,6 @@ namespace ContosoOnlineBikeStore.Models
         public int VisitID { get; set; }
 
         [Required]
-        [ForeignKey("CustomerID")]
         public int CustomerID { get; set; }
 
         [Column(TypeName = "date")]
@@ -75,6 +74,7 @@ namespace ContosoOnlineBikeStore.Models
         [Column(TypeName = "date")]
         public Nullable<System.DateTime> FollowUpDate { get; set; }
 
+        [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
     }
 }
