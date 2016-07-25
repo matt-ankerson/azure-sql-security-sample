@@ -39,7 +39,7 @@ namespace ContosoOnlineBikeStore.Controllers
         // GET: Visits/Create
         public ActionResult Create()
         {
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "SSN");
+            ViewBag.CustomerId = new SelectList(db.Customers, "CustomerId", "SSN");
             return View();
         }
 
@@ -48,7 +48,7 @@ namespace ContosoOnlineBikeStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "VisitID,CustomerID,Date,Reason,Treatment,FollowUpDate")] Visit visit)
+        public ActionResult Create([Bind(Include = "VisitId,CustomerId,Date,Reason,Treatment,FollowUpDate")] Visit visit)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +57,7 @@ namespace ContosoOnlineBikeStore.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "SSN", visit.CustomerID);
+            ViewBag.CustomerId = new SelectList(db.Customers, "CustomerId", "SSN", visit.CustomerId);
             return View(visit);
         }
 
@@ -73,7 +73,7 @@ namespace ContosoOnlineBikeStore.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "SSN", visit.CustomerID);
+            ViewBag.CustomerId = new SelectList(db.Customers, "CustomerId", "SSN", visit.CustomerId);
             return View(visit);
         }
 
@@ -82,7 +82,7 @@ namespace ContosoOnlineBikeStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "VisitID,CustomerID,Date,Reason,Treatment,FollowUpDate")] Visit visit)
+        public ActionResult Edit([Bind(Include = "VisitId,CustomerId,Date,Reason,Treatment,FollowUpDate")] Visit visit)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace ContosoOnlineBikeStore.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "SSN", visit.CustomerID);
+            ViewBag.CustomerId = new SelectList(db.Customers, "CustomerId", "SSN", visit.CustomerId);
             return View(visit);
         }
 

@@ -315,8 +315,8 @@ namespace ContosoOnlineBikeStore.Migrations
 
             // Create visits
             context.Visits.AddOrUpdate(
-                 new Visit { CustomerID = 1, Date = new System.DateTime(2016, 1, 10), Reason = "Headache", Treatment = "A nap" },
-                 new Visit { CustomerID = 1, Date = new System.DateTime(2016, 1, 10), Reason = "Worse headache", Treatment = "A longer nap" }
+                 new Visit { CustomerId = 1, Date = new System.DateTime(2016, 1, 10), Reason = "Headache", Treatment = "A nap" },
+                 new Visit { CustomerId = 1, Date = new System.DateTime(2016, 1, 10), Reason = "Worse headache", Treatment = "A longer nap" }
             );
             
             

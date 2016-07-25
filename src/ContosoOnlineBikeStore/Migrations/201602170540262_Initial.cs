@@ -11,7 +11,7 @@ namespace ContosoOnlineBikeStore.Migrations
                 "dbo.Customers",
                 c => new
                     {
-                        CustomerID = c.Int(nullable: false, identity: true),
+                        CustomerId = c.Int(nullable: false, identity: true),
                         SSN = c.String(maxLength: 11, fixedLength: true, unicode: false),
                         FirstName = c.String(maxLength: 50),
                         LastName = c.String(maxLength: 50),
@@ -22,7 +22,7 @@ namespace ContosoOnlineBikeStore.Migrations
                         State = c.String(maxLength: 2, fixedLength: true, unicode: false),
                         BirthDate = c.DateTime(nullable: false, storeType: "date"),
                     })
-                .PrimaryKey(t => t.CustomerID);
+                .PrimaryKey(t => t.CustomerId);
             
             CreateTable(
                 "dbo.AspNetRoles",

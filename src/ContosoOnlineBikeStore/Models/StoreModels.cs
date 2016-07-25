@@ -10,7 +10,8 @@ namespace ContosoOnlineBikeStore.Models
     public class Customer
     {
         public Customer() { }
-        public int CustomerID { get; set; }
+
+        public int CustomerId { get; set; }
 
         [StringLength(11)]
         [Column(TypeName = "char")]
@@ -55,10 +56,10 @@ namespace ContosoOnlineBikeStore.Models
 
     public class Visit
     {
-        public int VisitID { get; set; }
+        public int VisitId { get; set; }
 
         [Required]
-        public int CustomerID { get; set; }
+        public int CustomerId { get; set; }
 
         [Column(TypeName = "date")]
         [Required]
@@ -74,6 +75,7 @@ namespace ContosoOnlineBikeStore.Models
         [Column(TypeName = "date")]
         public Nullable<System.DateTime> FollowUpDate { get; set; }
 
+        [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
     }
 }

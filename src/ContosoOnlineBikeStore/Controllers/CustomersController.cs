@@ -57,7 +57,7 @@ namespace ContosoOnlineBikeStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CustomerID,SSN,FirstName,LastName,MiddleName,StreetAddress,City,ZipCode,State,BirthDate")] Customer customer)
+        public ActionResult Create([Bind(Include = "CustomerId,SSN,FirstName,LastName,MiddleName,StreetAddress,City,ZipCode,State,BirthDate")] Customer customer)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace ContosoOnlineBikeStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CustomerID,SSN,FirstName,LastName,MiddleName,StreetAddress,City,ZipCode,State,BirthDate")] Customer customer)
+        public ActionResult Edit([Bind(Include = "CustomerId,SSN,FirstName,LastName,MiddleName,StreetAddress,City,ZipCode,State,BirthDate")] Customer customer)
         {
             if (ModelState.IsValid)
             {
