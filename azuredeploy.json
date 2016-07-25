@@ -88,7 +88,7 @@
     },
     "variables": {
         "defaultSqlServerName": "[concat('contososerv', uniqueString(resourceGroup().id))]",
-        "defaultSqlDatabaseName": "Clinic",
+        "defaultSqlDatabaseName": "Store",
         "defaultSqlDatabaseCollation": "SQL_Latin1_General_CP1_CI_AS",
         "defaultSqlDatabaseEdition": "Standard",
         "defaultSqlDatabaseSLO": "S1",

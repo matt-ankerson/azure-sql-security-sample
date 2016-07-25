@@ -14,10 +14,10 @@ set step=bacpac
 
 :STEPbacpac
 ECHO Importing .bacpac
-sqlcmd -S %_DataSource% -d %_InitialCatalog% -U %APPSETTING_administratorLogin% -P %APPSETTING_administratorLoginPassword% -i .\sql\Clinic.sql
+sqlcmd -S %_DataSource% -d %_InitialCatalog% -U %APPSETTING_administratorLogin% -P %APPSETTING_administratorLoginPassword% -i .\sql\Store.sql
 
 IF ERRORLEVEL 1 GOTO :RETRY
-ECHO Step %step% succeeded! 
+ECHO Step %step% succeeded!
 set retryNumber=0
 
 :STEPsqlcmd

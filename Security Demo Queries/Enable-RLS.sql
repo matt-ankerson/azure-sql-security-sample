@@ -1,16 +1,16 @@
 -- If repeating the demo on the same installation, Reset 
-DROP SECURITY POLICY IF EXISTS Security.patientSecurityPolicy
-DROP FUNCTION IF EXISTS Security.patientAccessPredicate
+DROP SECURITY POLICY IF EXISTS Security.customerSecurityPolicy
+DROP FUNCTION IF EXISTS Security.customerAccessPredicate
 DROP SCHEMA IF EXISTS Security
 go
 
 -- Observe existing schema
-SELECT * FROM Patients
+SELECT * FROM Customers
 go
 
--- Observe the mapping table, which assigns patients to application users
--- We'll use RLS to ensure that application users can only access patients assigned to them
-SELECT * FROM ApplicationUserPatients
+-- Observe the mapping table, which assigns customers to application users
+-- We'll use RLS to ensure that application users can only access customers assigned to them
+SELECT * FROM ApplicationUserCustomers
 go
 
 
@@ -22,31 +22,31 @@ go
 
 -- Create predicate function for RLS
 -- This determines which users can access which rows
-CREATE FUNCTION Security.patientAccessPredicate(@PatientID int)
+CREATE FUNCTION Security.customerAccessPredicate(@CustomerID int)
 	RETURNS TABLE
 	WITH SCHEMABINDING
 AS
 	RETURN SELECT 1 AS isAccessible
-	FROM dbo.ApplicationUserPatients
+	FROM dbo.ApplicationUserCustomers
 	WHERE 
 	(
-		-- application users can access only patients assigned to them
-		Patient_PatientID = @PatientID
+		-- application users can access only customers assigned to them
+		Customer_CustomerID = @CustomerID
 		AND ApplicationUser_Id = CAST(SESSION_CONTEXT(N'UserId') AS nvarchar(128)) 
 	)
 	OR 
 	(
-		-- DBAs can access all patients
+		-- DBAs can access all customers
 		IS_MEMBER('db_owner') = 1
 	)
 go
 
--- Create security policy that adds this function as a security predicate on the Patients and Visits tables
--- Filter predicates filter out patients who shouldn't be accessible by the current user
--- Block predicates prevent the current user from inserting any patients who aren't mapped to the user
-CREATE SECURITY POLICY Security.patientSecurityPolicy
-	ADD FILTER PREDICATE Security.patientAccessPredicate(PatientID) ON dbo.Patients,
-	ADD BLOCK PREDICATE Security.patientAccessPredicate(PatientID) ON dbo.Patients,
-	ADD FILTER PREDICATE Security.patientAccessPredicate(PatientID) ON dbo.Visits,
-	ADD BLOCK PREDICATE Security.patientAccessPredicate(PatientID) ON dbo.Visits
+-- Create security policy that adds this function as a security predicate on the Customers and Visits tables
+-- Filter predicates filter out customers who shouldn't be accessible by the current user
+-- Block predicates prevent the current user from inserting any customers who aren't mapped to the user
+CREATE SECURITY POLICY Security.customerSecurityPolicy
+	ADD FILTER PREDICATE Security.customerAccessPredicate(CustomerID) ON dbo.Customers,
+	ADD BLOCK PREDICATE Security.customerAccessPredicate(CustomerID) ON dbo.Customers,
+	ADD FILTER PREDICATE Security.customerAccessPredicate(CustomerID) ON dbo.Visits,
+	ADD BLOCK PREDICATE Security.customerAccessPredicate(CustomerID) ON dbo.Visits
 go
