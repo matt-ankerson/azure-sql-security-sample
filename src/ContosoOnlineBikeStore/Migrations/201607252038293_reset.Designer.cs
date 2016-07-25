@@ -7,13 +7,13 @@ namespace ContosoOnlineBikeStore.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Visits : IMigrationMetadata
+    public sealed partial class reset : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Visits));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(reset));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602170605457_Visits"; }
+            get { return "201607252038293_reset"; }
         }
         
         string IMigrationMetadata.Source

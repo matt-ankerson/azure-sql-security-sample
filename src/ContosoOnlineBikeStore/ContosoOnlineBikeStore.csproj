@@ -224,21 +224,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201602170540262_Initial.cs" />
-    <Compile Include="Migrations\201602170540262_Initial.Designer.cs">
-      <DependentUpon>201602170540262_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602170605457_Visits.cs" />
-    <Compile Include="Migrations\201602170605457_Visits.Designer.cs">
-      <DependentUpon>201602170605457_Visits.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602170720063_Nullability.cs" />
-    <Compile Include="Migrations\201602170720063_Nullability.Designer.cs">
-      <DependentUpon>201602170720063_Nullability.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201602170857179_Assignments.cs" />
-    <Compile Include="Migrations\201602170857179_Assignments.Designer.cs">
-      <DependentUpon>201602170857179_Assignments.cs</DependentUpon>
+    <Compile Include="Migrations\201607252038293_reset.cs" />
+    <Compile Include="Migrations\201607252038293_reset.Designer.cs">
+      <DependentUpon>201607252038293_reset.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -327,17 +315,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201602170540262_Initial.resx">
-      <DependentUpon>201602170540262_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602170605457_Visits.resx">
-      <DependentUpon>201602170605457_Visits.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602170720063_Nullability.resx">
-      <DependentUpon>201602170720063_Nullability.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602170857179_Assignments.resx">
-      <DependentUpon>201602170857179_Assignments.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607252038293_reset.resx">
+      <DependentUpon>201607252038293_reset.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

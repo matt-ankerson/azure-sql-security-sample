@@ -1,10 +1,5 @@
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.csproj.App.config
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.csprojResolveAssemblyReference.cache
-C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.Initial.resources
-C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.Visits.resources
-C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.Nullability.resources
-C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.Assignments.resources
-C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.csproj.GenerateResource.Cache
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\bin\roslyn\csc.exe
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
@@ -96,3 +91,5 @@ C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\bin\Mic
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.dll
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.pdb
+C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.reset.resources
+C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.csproj.GenerateResource.Cache
