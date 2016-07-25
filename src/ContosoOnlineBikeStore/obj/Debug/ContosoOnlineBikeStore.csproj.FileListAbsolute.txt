@@ -93,3 +93,4 @@ C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Deb
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.pdb
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.reset.resources
 C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.csproj.GenerateResource.Cache
+C:\source\immersion\azure-sql-security-sample\src\ContosoOnlineBikeStore\obj\Debug\ContosoOnlineBikeStore.Migrations.ghostchanges.resources

@@ -228,6 +228,10 @@
     <Compile Include="Migrations\201607252038293_reset.Designer.cs">
       <DependentUpon>201607252038293_reset.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201607252101134_ghostchanges.cs" />
+    <Compile Include="Migrations\201607252101134_ghostchanges.Designer.cs">
+      <DependentUpon>201607252101134_ghostchanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\StoreModels.cs" />
@@ -317,6 +321,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201607252038293_reset.resx">
       <DependentUpon>201607252038293_reset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607252101134_ghostchanges.resx">
+      <DependentUpon>201607252101134_ghostchanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
