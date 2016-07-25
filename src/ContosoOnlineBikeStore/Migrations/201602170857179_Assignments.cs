@@ -19,6 +19,7 @@ namespace ContosoOnlineBikeStore.Migrations
                 .ForeignKey("dbo.Customers", t => t.Customers_CustomerID, cascadeDelete: true)
                 .Index(t => t.ApplicationUser_Id)
                 .Index(t => t.Customers_CustomerID);
+            AddForeignKey("dbo.Customer", "CustomerID", "dbo.Visit", "CustomerID");
             
         }
         
@@ -29,6 +30,7 @@ namespace ContosoOnlineBikeStore.Migrations
             DropIndex("dbo.ApplicationUserCustomers", new[] { "Customers_CustomerID" });
             DropIndex("dbo.ApplicationUserCustomers", new[] { "ApplicationUser_Id" });
             DropTable("dbo.ApplicationUserCustomers");
+            DropForeignKey("dbo.Customer", "CustomerID", "dbo.Visit");
         }
     }
 }
