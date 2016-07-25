@@ -58,6 +58,7 @@ namespace ContosoOnlineBikeStore.Models
         public int VisitID { get; set; }
 
         [Required]
+        [ForeignKey("CustomerID")]
         public int CustomerID { get; set; }
 
         [Column(TypeName = "date")]
