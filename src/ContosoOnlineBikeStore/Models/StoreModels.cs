@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Owin.Security.Provider;
 
 namespace ContosoOnlineBikeStore.Models
 {
@@ -16,20 +17,25 @@ namespace ContosoOnlineBikeStore.Models
         [StringLength(11)]
         [Column(TypeName = "char")]
         [Required]
+        [Display(Name = "Credit Card No.")]
         public string SSN { get; set; }
 
         [StringLength(50)]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
         [StringLength(50)]
         [Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [StringLength(50)]
+        [Display(Name = "Middle Name")]
         public string MiddleName { get; set; }
 
         [StringLength(50)]
         [Required]
+        [Display(Name = "Address")]
         public string StreetAddress { get; set; }
 
         [StringLength(50)]
@@ -39,6 +45,7 @@ namespace ContosoOnlineBikeStore.Models
         [StringLength(5)]
         [Column(TypeName = "char")]
         [Required]
+        [Display(Name = "Zip Code")]
         public string ZipCode { get; set; }
 
         [StringLength(2)]
@@ -48,7 +55,10 @@ namespace ContosoOnlineBikeStore.Models
 
         [Column(TypeName = "date")]
         [Required]
+        [Display(Name = "Birth Date")]
         public System.DateTime BirthDate { get; set; }
+
+        public string FormattedBirthDate => BirthDate.ToString("MM/dd/yyyy");
 
         public virtual ICollection<Visit> Visits { get; set; }
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }

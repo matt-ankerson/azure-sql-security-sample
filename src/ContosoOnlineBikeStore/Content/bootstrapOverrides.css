@@ -1,0 +1,80 @@
+﻿/* Override the margin at the bottom for jumbo tron for this  on this site*/
+.jumbotron {
+  margin-bottom: 0;
+    background-color: transparent;
+}
+
+@media screen and (min-width: 768px) {
+   .jumbotron h1 {
+    font-size: 48px;
+} 
+}
+
+.container {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+
+.table-no-border>thead>tr>th, 
+.table-no-border>tbody>tr>th, 
+.table-no-border>tfoot>tr>th, 
+.table-no-border>thead>tr>td, 
+.table-no-border>tbody>tr>td, 
+.table-no-border>tfoot>tr>td {
+  border-top: none; 
+}
+
+.left-padding-delete {
+    padding-left: 0px;
+}
+
+.btn {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.btn, .form-control {
+    border-radius: 0px;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+/* Table overrides */
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+  border-top: none;
+    vertical-align: middle;
+    color: black
+}
+
+.table thead > tr > th {
+  border-bottom: none;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+  background-color: #F1F1F1;
+}
+
+/* Global nav overrides */
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+  text-decoration: none;
+    background-color: transparent;
+}

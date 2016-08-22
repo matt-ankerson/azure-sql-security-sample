@@ -1,107 +1,119 @@
 ﻿@model IEnumerable<ContosoOnlineBikeStore.Models.Customer>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Customers";
 }
 
-<h2>Customers</h2>
 <p>
     @using (Html.BeginForm("Index", "Customers", null, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
-        <div style="float: left; width:80%;">
-            <div style="float: left; width: 60%;">
-                @Html.TextBox("search", "", new { @class = "form-control", style = "width: 100%;max-width:100%" })
+        <br />
+        <div class="row">
+            <h3>Search</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-6 left-padding-delete">
+                @Html.TextBox("search", "", new { @class = "form-control", @placeholder = "Enter Keyword", style = "width: 100%;max-width:100%" })
             </div>
-            <div style="float: left; margin-left:10px; width: 20%;">
-                <input type="submit" value="Search" class="btn btn-default" />
+            <div class="col-md-6 left-padding-delete">
+                <input type="submit" value="Search" class="btn btn-primary" />
+                &nbsp;
                 <a id="tips_toggle">SQLi Hints</a>
+                @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-success pull-right" })
             </div>
         </div>
     }
 </p>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <div id="tips">
-    <br/>
-    Pre-req: Enable Auditing and Threat Detection from the <a target="_blank" href="https://portal.azure.com">Azure portal</a>
     <br />
-    To create SQL injection, you can try the following texts:
+    Pre-req: Enable <strong>Auditing and Threat Detection</strong> from the <a target="_blank" href="https://portal.azure.com">Azure portal</a>
+    <br />
+    To invoke a SQL injection attack, you can try the following snippets:
     <ul>
-        <li>' OR CAST(@@@@version as int) = 1 --</li>
-        <li>' UNION SELECT CAST(CAST('[id]='+CAST([id] as nvarchar)+'|[UserName]='+[UserName]+'|[PasswordHash]='+[PasswordHash] as int)as nvarchar), NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM [AspNetUsers] --</li>
+        <li><code>' OR CAST(@@@@version as int) = 1 --</code></li>
+        <li><code>' UNION SELECT CAST(CAST('[id]='+CAST([id] as nvarchar)+'|[UserName]='+[UserName]+'|[PasswordHash]='+[PasswordHash] as int)as nvarchar), NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM [AspNetUsers] --</code></li>
     </ul>
 </div>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.SSN)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FirstName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.MiddleName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StreetAddress)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ZipCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.State)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BirthDate)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td style="white-space:nowrap">
-            @Html.DisplayFor(modelItem => item.SSN)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.MiddleName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.StreetAddress)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.City)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ZipCode)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.State)
-        </td>
-        <td style="white-space:nowrap">
-            @Html.DisplayFor(modelItem => item.BirthDate)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CustomerId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.CustomerId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.CustomerId })
-        </td>
-    </tr>
-}
+<p>
+    <br />
+</p>
 
+<table class="table table-striped borderless">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SSN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MiddleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StreetAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ZipCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthDate)
+            </th>
+            <th>
+                Options
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="white-space:nowrap">
+                    @Html.DisplayFor(modelItem => item.SSN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MiddleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StreetAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ZipCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td style="white-space:nowrap">
+                    @Html.DisplayFor(modelItem => item.FormattedBirthDate)
+                </td>
+                <td>
+                    <a href="/Customers/Edit/@item.CustomerId"><span class="action-icon edit-icon"></span></a>
+                    <a href="/Customers/Details/@item.CustomerId"><span class="action-icon details-icon"></span></a>
+                    <a href="/Customers/Delete/@item.CustomerId"><span class="action-icon delete-icon"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
 <script type="text/javascript">
     $(document).ready(function () {

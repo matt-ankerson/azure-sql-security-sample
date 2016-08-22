@@ -9,34 +9,76 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <link href="~/Content/MyFontsWebfontsKit.css" rel="stylesheet" />
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Contoso Online Bike Store", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Customers", "Index", "Customers")</li>
-                    <li>@Html.ActionLink("Visits", "Index", "Visits")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>
+
+<div id="sb-site" class="sub-lvl-bg">
+    
+    <div class="jumbotron hidden-xs">
+        <div class="hero-sub-image">
+            <div class="sub-brand-logo"></div>
+            <h1 class="page-title sub-title">Product</h1>
+
+            @*<nav class="navbar" role="navigation">
+                <div class="">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="navbar-btn">
+                                <a href="/Customers/Index">
+                                    <span class="glyphicon glyphicon-th-list"></span>
+                                </a>
+                            </li>
+                            <li class="navbar-btn">
+                                <a href="/Customers/Create">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                </div>
+                <!-- /.container-fluid -->
+            </nav>*@
+
         </div>
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Contoso Online Bike Store</p>
-        </footer>
+
+    <div class="row body-content">
+        <div class="container">
+            <div class="page-wrap">
+                @RenderBody()
+            </div>
+            <footer class="site-footer">
+                <div class="bg-footer">
+                    <ul class="list-group hidden-xs">
+                        <li class="list-group-item footer-list-item">
+                            <small>&copy; Adventureworks.com Ltd. All rights reserved.</small>
+                        </li>
+                        <li class="list-group-item footer-list-item">Contact Us</li>
+                        <li class="list-group-item footer-list-item">Terms & Conditions</li>
+                        <li class="list-group-item footer-list-item">Delivery & Returns</li>
+                        <li class="list-group-item footer-list-item">Stay tuned</li>
+                    </ul>
+                    <div class="visible-xs">
+                        <small>&copy; Adventureworks.com Ltd. All rights reserved.</small>
+                    </div>
+                </div>
+            </footer>
+        </div>
     </div>
+</div>
 </body>
 </html>
