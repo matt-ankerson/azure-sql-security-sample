@@ -336,7 +336,8 @@ a {color: #227a95;}
     z-index: 5;
 }
 .sub-brand-logo {
-    background-image: url(./images/sub-head-brand-layer.png);
+    /*background-image: url(./images/sub-head-brand-layer.png);*/
+    background-image: url(./images/contoso-cycle-logo.png);
     background-position: left top;
     background-repeat: no-repeat;
     position: absolute;

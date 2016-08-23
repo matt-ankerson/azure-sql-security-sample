@@ -251,6 +251,7 @@
     <Content Include="Content\images\button_delete.png" />
     <Content Include="Content\images\button_details.png" />
     <Content Include="Content\images\button_edit.png" />
+    <Content Include="Content\images\contoso-cycle-logo.png" />
     <Content Include="Content\images\slide-sub-head.jpg" />
     <Content Include="Content\images\sub-head-brand-layer.png" />
     <Content Include="Content\MyFontsWebfontsKit.css" />
