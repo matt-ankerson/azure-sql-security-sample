@@ -1,3 +1,4 @@
+*.swp
 src/.vs/
 src/packages/
 src/ContosoClinic/obj
