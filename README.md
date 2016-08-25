@@ -1,8 +1,8 @@
-#Contoso Clinic Demo Application 
+#Contoso Bike Shop Demo Application 
 
-### Note: This demo application has been modified to demonstrate a slightly different business scenario.
+### Note: This demo application has been modified to demonstrate a different business scenario.
 
-Find the *real* working version here: <https://github.com/Microsoft/azure-sql-security-sample>
+Find the original version here: <https://github.com/Microsoft/azure-sql-security-sample>
 
 Sample application with database that showcases security features of Azure SQL DB (V12). 
 
