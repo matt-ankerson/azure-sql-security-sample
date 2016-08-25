@@ -281,45 +281,4 @@ SET IDENTITY_INSERT [dbo].[Visits] ON
 INSERT [dbo].[Visits] ([VisitId], [CustomerId], [Date], [Reason], [Treatment], [FollowUpDate]) VALUES (1, 1, CAST(N'2016-01-10' AS Date), N'Headache', N'A nap', NULL)
 INSERT [dbo].[Visits] ([VisitId], [CustomerId], [Date], [Reason], [Treatment], [FollowUpDate]) VALUES (2, 1, CAST(N'2016-01-10' AS Date), N'Worse headache', N'A longer nap', NULL)
 SET IDENTITY_INSERT [dbo].[Visits] OFF
-ALTER TABLE [dbo].[ApplicationUserCustomers]  WITH CHECK ADD  CONSTRAINT [FK_dbo.ApplicationUserCustomers_dbo.AspNetUsers_ApplicationUser_Id] FOREIGN KEY([ApplicationUser_Id])
-REFERENCES [dbo].[AspNetUsers] ([Id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[ApplicationUserCustomers] CHECK CONSTRAINT [FK_dbo.ApplicationUserCustomers_dbo.AspNetUsers_ApplicationUser_Id]
-GO
-ALTER TABLE [dbo].[ApplicationUserCustomers]  WITH CHECK ADD  CONSTRAINT [FK_dbo.ApplicationUserCustomers_dbo.Customers_Customer_CustomerId] FOREIGN KEY([Customer_CustomerId])
-REFERENCES [dbo].[Customers] ([CustomerId])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[ApplicationUserCustomers] CHECK CONSTRAINT [FK_dbo.ApplicationUserCustomers_dbo.Customers_Customer_CustomerId]
-GO
-ALTER TABLE [dbo].[AspNetUserClaims]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId] FOREIGN KEY([UserId])
-REFERENCES [dbo].[AspNetUsers] ([Id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[AspNetUserClaims] CHECK CONSTRAINT [FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId]
-GO
-ALTER TABLE [dbo].[AspNetUserLogins]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId] FOREIGN KEY([UserId])
-REFERENCES [dbo].[AspNetUsers] ([Id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[AspNetUserLogins] CHECK CONSTRAINT [FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId]
-GO
-ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId] FOREIGN KEY([RoleId])
-REFERENCES [dbo].[AspNetRoles] ([Id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId]
-GO
-ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId] FOREIGN KEY([UserId])
-REFERENCES [dbo].[AspNetUsers] ([Id])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId]
-GO
-ALTER TABLE [dbo].[Visits]  WITH CHECK ADD  CONSTRAINT [FK_dbo.Visits_dbo.Customers_CustomerId] FOREIGN KEY([CustomerId])
-REFERENCES [dbo].[Customers] ([CustomerId])
-ON DELETE CASCADE
-GO
-ALTER TABLE [dbo].[Visits] CHECK CONSTRAINT [FK_dbo.Visits_dbo.Customers_CustomerId]
 GO
