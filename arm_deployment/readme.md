@@ -23,4 +23,4 @@ Post-deployment
 0. Runs SQL INSERT script against the database.
 
 Sample deployment:
-* .\predeploy my-resource-group-name mystorageaccountname
+* `.\predeploy my-resource-group-name mystorageaccountname`
