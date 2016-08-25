@@ -1,5 +1,6 @@
 *.swp
 arm_deployment/out/
+imm_deployment/out/
 src/.vs/
 src/packages/
 src/ContosoClinic/obj
