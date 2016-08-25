@@ -1,5 +1,10 @@
-INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'376f23d3-7caf-49be-95cb-17d65be4f0af', NULL, 0, N'ABko+BO9HAfOqj0/fffs4WKSBaMIoww1iSs6WeJWBWgmrymphRs8bsWAIMfFIHUyeA==', N'38e57991-d484-4627-9194-329fd356ff87', NULL, 0, 0, NULL, 0, 0, N'alice@contoso.com')
-INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'c5834663-0d2d-4089-8dda-f0ede35e4152', NULL, 0, N'AB54hSnUejqCfTTOy9BHs0m1jxYgFbdRnS+IigFEuy/npP5eNPGCV8GgzARnwEWStw==', N'25fc5209-6664-43d7-a678-200eb6770f71', NULL, 0, 0, NULL, 0, 0, N'rachel@contoso.com')
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+--INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'376f23d3-7caf-49be-95cb-17d65be4f0af', NULL, 0, N'ABko+BO9HAfOqj0/fffs4WKSBaMIoww1iSs6WeJWBWgmrymphRs8bsWAIMfFIHUyeA==', N'38e57991-d484-4627-9194-329fd356ff87', NULL, 0, 0, NULL, 0, 0, N'alice@contoso.com')
+--INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'c5834663-0d2d-4089-8dda-f0ede35e4152', NULL, 0, N'AB54hSnUejqCfTTOy9BHs0m1jxYgFbdRnS+IigFEuy/npP5eNPGCV8GgzARnwEWStw==', N'25fc5209-6664-43d7-a678-200eb6770f71', NULL, 0, 0, NULL, 0, 0, N'rachel@contoso.com')
 SET IDENTITY_INSERT [dbo].[Customers] ON 
 
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (1, N'7080500924846561', N'Catherine', N'Abel', N'R.', N'57251 Serene Blvd', N'Van Nuys', N'91411', N'CA', CAST(N'1996-09-10' AS Date))
@@ -101,7 +106,7 @@ INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleN
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (97, N'1929767637788651', N'Cindy', N'Dodd', N'M.', N'994 Sw Cherry Park Rd', N'Troutdale', N'97060', N'OR', CAST(N'2011-09-10' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (98, N'9899922944427291', N'Patricia', N'Doyle', N'', N'225 South 314th Street', N'Federal Way', N'98003', N'WA', CAST(N'1994-03-08' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (99, N'3668855708453758', N'Gerald', N'Drury', N'M.', N'4635 S. Harrison Blvd.', N'Ogden', N'84401', N'UT', CAST(N'1962-05-22' AS Date))
-GO
+--GO
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (100, N'4760197975310965', N'Bart', N'Duncan', N'', N'99295 S.e. Tualatin Valley_hwy.', N'Hillsboro', N'97123', N'OR', CAST(N'1982-10-22' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (101, N'6558805405998835', N'Maciej', N'Dusza', N'', N'2564 S. Redwood Rd.', N'Riverton', N'84065', N'UT', CAST(N'1964-03-13' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (102, N'6561318678147755', N'Carol', N'Elliott', N'B.', N'25220 Airline Road', N'Corpus Christi', N'78404', N'TX', CAST(N'1963-05-28' AS Date))
@@ -202,7 +207,7 @@ INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleN
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (197, N'3478131515740181', N'Elsa', N'Leavitt', N'', N'2575 West 2700 South', N'Salt Lake City', N'84101', N'UT', CAST(N'1956-09-15' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (198, N'6980540140768351', N'Marjorie', N'Lee', N'M.', N'2509 W. Frankford', N'Carrollton', N'75006', N'TX', CAST(N'1990-11-24' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (199, N'6950765748440859', N'Roger', N'Lengel', N'', N'490 Ne 4th St', N'Renton', N'98055', N'WA', CAST(N'1998-02-22' AS Date))
-GO
+--GO
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (200, N'7915586467450646', N'A.', N'Leonetti', N'Francesca', N'5700 Legacy Dr', N'Plano', N'75074', N'TX', CAST(N'1979-04-27' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (201, N'1652230569301592', N'Bonnie', N'Lepro', N'B.', N'25600 E St Andrews Pl', N'Santa Ana', N'92701', N'CA', CAST(N'1984-11-19' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (202, N'9829086869531355', N'Elsie', N'Lewin', N'L.', N'P.O. Box 6256916', N'Dallas', N'75201', N'TX', CAST(N'1980-04-20' AS Date))

@@ -291,8 +291,6 @@ $global:aadAppSecret = $keyObject | Select-Object -ExpandProperty keyId
 # User object ID
 $global:aadUserObjectId = $oauthObject | Select-Object -ExpandProperty id
 
-Write-Host "User Object ID"
-Write-Host $global:aadUserObjectId
 #---------------------------------------------------#
 # Begin Resource Deployment (end of pre-deployment) #
 #---------------------------------------------------#
@@ -338,3 +336,4 @@ foreach ($name in $armResult.Outputs.Keys) {
 }
 
 # Invoke post-deployment script.
+. "$(Split-Path $MyInvocation.MyCommand.Path)\postdeploy.ps1"
