@@ -33,8 +33,7 @@
 			"defaultValue": "contosoapp",
 			"metadata": {
 				"description": "Website Name"
-			},
-			"defaultValueComeFirst": "true"
+			}
 		},
         "location": {
             "type": "string",
@@ -78,7 +77,19 @@
 			"metadata": {
 			"description": "Tenant Id of the subscription. Get using Get-AzureRmSubscription cmdlet or Get Subscription API"
 			}
-		}
+		},
+        "packageUri": {
+            "type": "string",
+            "metadata": {
+			"description": "Location of the web deploy package."
+			}
+        },
+        "externalIpAddress": {
+            "type": "string",
+            "metadata": {
+			"description": "External IP address of the machine which ran the predeployment script."
+			}
+        }
     },
     "variables": {
         "defaultSqlServerName": "[concat('contososerv', uniqueString(resourceGroup().id))]",
@@ -124,6 +135,19 @@
 				  "properties": {
 					"endIpAddress": "0.0.0.0",
 					"startIpAddress": "0.0.0.0"
+				  },
+				  "type": "firewallrules"
+				},
+                {
+				  "apiVersion": "2014-04-01-preview",
+				  "dependsOn": [
+					"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]"
+				  ],
+				  "location": "[parameters('location')]",
+				  "name": "AllowLocalMachine",
+				  "properties": {
+					"endIpAddress": "[parameters('externalIpAddress')]",
+					"startIpAddress": "[parameters('externalIpAddress')]"
 				  },
 				  "type": "firewallrules"
 				},
@@ -254,6 +278,19 @@
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
+                    "name": "MSDeploy",
+                    "type": "extensions",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
+                    ],
+                    "properties": {
+                        "packageUri": "[parameters('packageUri')]",
+                        "connectionString": "",
+                        "dbType": ""
+                    }
+                },
+                {
+                    "apiVersion": "2015-08-01",
                     "type": "config",
                     "name": "appsettings",
                     "dependsOn": [
@@ -284,5 +321,23 @@
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {
+        "sqlServerName": {
+            "type": "string",
+            "value": "[concat(reference(concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))).fullyQualifiedDomainName, ',1433')]"
+        },
+        "sqlServerDbName": {
+            "type": "string",
+            "value": "[variables('defaultSqlDatabaseName')]"
+        },
+        "sqlServerUsername": {
+            "type": "string",
+            "value": "[concat(parameters('applicationLogin'), '@', variables('defaultSqlServerName'))]"
+        },
+        "sqlServerPassword": {
+            "type": "string",
+            "value": "[parameters('applicationLoginPassword')]"
+        }
+    }
 }

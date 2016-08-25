@@ -291,6 +291,8 @@ $global:aadAppSecret = $keyObject | Select-Object -ExpandProperty keyId
 # User object ID
 $global:aadUserObjectId = $oauthObject | Select-Object -ExpandProperty id
 
+Write-Host "User Object ID"
+Write-Host $global:aadUserObjectId
 #---------------------------------------------------#
 # Begin Resource Deployment (end of pre-deployment) #
 #---------------------------------------------------#
@@ -300,21 +302,19 @@ Write-Host 'Starting resource group deployment'
 $template = "$script_dir\deploytemplate.json"
 
 $params = @{
-    'resourceGroup'                     = $global:resourceGroupName;
-    'webAppPackageUrl'                  = $global:webAppPackageUri;
-    'externalIpAddress'                 = $global:external_ip_address;
-    # Below: app settings for web app.
     'administratorLogin'                = $global:username;
     'administratorLoginPassword'        = $global:password;
     'applicationLogin'                  = $global:username;
     'applicationLoginPassword'          = $global:password;
     'siteName'                          = $global:resourceGroupName;
     'location'                          = $global:region;
-    'userObjectID'                      = $global:aadUserObjectId;
-    'ApplicationObjectId'               = $global:aadApplicationObjectId;
-    'ClientId'                          = $global:aadClientId;
-    'ActiveDirectoryAppSecret'          = $global:aadAppSecret;
-    'applicationADSecret'               = $global:aadAppSecret;
+    'userObjectID'                      = $global:aadUserObjectId.ToString();
+    'ApplicationObjectId'               = $global:aadApplicationObjectId.ToString();
+    'ClientId'                          = $global:aadClientId.ToString();
+    'ActiveDirectoryAppSecret'          = $global:aadAppSecret.ToString();
+    'tenantId'                          = $global:aadTenantId.ToString();
+    'packageUri'                        = $global:webAppPackageUri;
+    'externalIpAddress'                 = $global:external_ip_address;
 }
 
 $armResult = New-AzureRmResourceGroupDeployment -ResourceGroupName $global:resourceGroupName -TemplateFile $template -TemplateParameterObject $params -Verbose
@@ -334,6 +334,7 @@ $OUTPUTS = @{}
 
 foreach ($name in $armResult.Outputs.Keys) {
     $OUTPUTS[$name] = $armResult.Outputs[$name].Value
+    Write-Host $OUTPUTS[$name]
 }
 
 # Invoke post-deployment script.

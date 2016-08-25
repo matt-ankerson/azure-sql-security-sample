@@ -12,7 +12,7 @@ namespace ContosoOnlineBikeStore.Migrations
                 c => new
                     {
                         CustomerId = c.Int(nullable: false, identity: true),
-                        SSN = c.String(nullable: false, maxLength: 11, fixedLength: true, unicode: false),
+                        SSN = c.String(nullable: false, maxLength: 30, fixedLength: true, unicode: false),
                         FirstName = c.String(maxLength: 50),
                         LastName = c.String(nullable: false, maxLength: 50),
                         MiddleName = c.String(maxLength: 50),
