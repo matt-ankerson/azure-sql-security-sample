@@ -320,6 +320,10 @@
         },
         "username": {
             "type": "string",
+            "value": "[parameters('applicationLogin')]"
+        },
+        "sqlServerUsername": {
+            "type": "string",
             "value": "[concat(parameters('applicationLogin'), '@', variables('defaultSqlServerName'))]"
         },
         "password": {
