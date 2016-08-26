@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "administratorLogin": {
+      "value": "contosoadmin"
+    },
+    "administratorLoginPassword": {
+      "value": "Imm3rs!on99"
+    },
+    "applicationLogin": {
+      "value": "contosoadmin"
+    },
+    "applicationLoginPassword": {
+      "value": "Imm3rs!on99"
+    },
+    "siteName": {
+      "value": "sql-security-pwyw"
+    },
+    "location": {
+      "value": "East US"
+    },
+    "tenantId": {
+      "value": "bde62cd7-b052-4280-998a-8cd57b67c8e5"
+    },
+    "webDeployPackageUri": {
+      "value": "https://sqlsecurityfjhtf.blob.core.windows.net/deployment/ContosoOnlineBikeStore.zip"
+    },
+    "externalIpAddress": {
+      "value": "202.126.87.100"
+    }
+  }
+}

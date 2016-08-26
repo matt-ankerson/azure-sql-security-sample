@@ -65,20 +65,20 @@ $global:deployOutputs = (Get-AzureRMResourceGroupDeployment "$($global:resourceG
 #--------------------------------#
 # Setup some necessary variables #
 #--------------------------------#
-$global:region = $global:deployOutputs['region']
-$global:username = $global:deployOutputs['username']
-$global:password = $global:deployOutputs['password']
+$global:region = $global:deployOutputs['region'].value
+$global:username = $global:deployOutputs['username'].value
+$global:password = $global:deployOutputs['password'].value
 
-$global:keyVaultName = $global:deployOutputs['keyVaultName']
-$global:siteName = $global:deployOutputs['siteName']
-$global:sqlServerName = $global:deployOutputs['sqlServerName']
-$global:sqlServerDbName = $global:deployOutputs['sqlServerDbName']
-$global:sqlServerUsername = $global:deployOutputs['sqlServerUsername']
+$global:keyVaultName = $global:deployOutputs['keyVaultName'].value
+$global:siteName = $global:deployOutputs['siteName'].value
+$global:sqlServerName = $global:deployOutputs['sqlServerName'].value
+$global:sqlServerDbName = $global:deployOutputs['sqlServerDbName'].value
+$global:sqlServerUsername = $global:deployOutputs['sqlServerUsername'].value
 
 $global:aadSecretGuid = New-Guid
 $global:aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($global:aadSecretGuid)
 $global:aadDisplayName = "sqlinj$($global:resourceGroupName)"
-$global:aadIdentifierUris = @("https://$(global:resourceGroupName)")
+$global:aadIdentifierUris = @("https://$($global:resourceGroupName)")
 $global:aadSecret = @{
     'type'='Symmetric';
     'usage'='Verify';
@@ -147,15 +147,15 @@ $global:aadUserObjectId = $oauthObject | Select-Object -ExpandProperty id
 # Create Key Vault Access Policies #
 #----------------------------------#
 
-Write-Host 'Creating Key Vault Access Policies'
+Write-Host "Creating Key Vault Access Policies for $($global:keyVaultName)"
 
 # Create access policy for application.
 # - grants the app permission to read secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ResourceGroupName $global:resourceGroupName -ObjectId $global:aadApplicationObjectId -PermissionsToSecrets 'List,Get' -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
+Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadApplicationObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
 
 # Create access policy for user.
 # - grants the user permission to read and write secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ResourceGroupName $global:resourceGroupName -ObjectId $global:aadUserObjectId -PermissionsToSecrets 'List,Get' -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
+#Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadUserObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
 
 
 #------------------------------#
@@ -180,8 +180,8 @@ $appSettings['administratorLogin'] = $global:username
 $appSettings['administratorLoginPassword'] = $global:password
 $appSettings['applicationLogin'] = $global:username
 $appSettings['applicationLoginPassword'] = $global:password
-$appSettings['applicationADID'] = $global:aadClientId
-$appSettings['applicationADSecret'] = $global:aadAppSecret
+$appSettings['applicationADID'] = $global:aadClientId.ToString()
+$appSettings['applicationADSecret'] = $global:aadAppSecret.ToString()
 
 # Push the new app settings back to the web app
 Set-AzureRmWebApp -ResourceGroupName "$($global:resourceGroupName)" -Name "$($global:siteName)" -AppSettings $appSettings

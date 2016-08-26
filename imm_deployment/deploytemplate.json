@@ -50,30 +50,6 @@
                 "description": "The Azure region in which these resources will be deployed."
             }
         },
-    	"userObjectID": {
-    		"type": "string",
-    		"metadata": { 
-    		"description": "The user's ID within Azure Active Directory- necessary for AKV integration. Get via powershell command Get-AzureRmADUser " 
-    		}
-    	},
-    	"ApplicationObjectId": {
-    		"type": "string",
-    		"metadata": { 
-    		"description": "The application's ID within Azure Active Directory- necessary for AKV integration" 
-    		}
-    	},
-    	"ClientId":{
-    		"type": "string",
-    		"metadata": {
-    		"description": "The application ID within AAD; See the Generate Application ID and Secret Step in the readme"
-    		}
-    	},
-    	"ActiveDirectoryAppSecret": {
-    		"type": "securestring",
-    		"metadata": {
-    		"description":  "The application's secret to allow access to AKV"
-    	  }
-    	},
     	"tenantId": {
     		"type": "string",
     		"metadata": {
@@ -90,7 +66,7 @@
             "type": "string",
             "defaultValue": "0.0.0.0",
             "metadata": {
-    		"description": "External IP address of the machine which ran the predeployment script."
+    		"description": "External IP address of the machine which is going to run the post-deployment script."
     		}
         }
     },
@@ -110,11 +86,13 @@
     	"skuName": "Standard",
     	"enableVaultForVolumeEncryption": false,
     	"enableVaultForDeployment": false,
-    	"enableVaultforTemplateDeployment": true,
+    	"enableVaultforTemplateDeployment": false,
     	"appKeysPermissions": ["get", "wrapkey", "unwrapkey", "sign", "verify"],
     	"appSecretPermissions": ["list", "get" ],
     	"userKeysPermissions": ["create", "get", "wrapkey", "unwrapkey", "sign", "verify"], 
-    	"userSecretPermissions": ["list", "get"]
+    	"userSecretPermissions": ["list", "get"],
+
+        "siteDeploymentName": "MSDeploy"
     },
     "resources": [
         {
@@ -223,7 +201,8 @@
     		"enabledForTemplateDeployment": "[variables('enableVaultforTemplateDeployment')]",
     		"enabledForVolumeEncryption": "[variables('enableVaultForVolumeEncryption')]",
     		"tenantId": "[parameters('tenantId')]",
-    		],
+            "accessPolicies": [
+            ],
     		"sku": {
     		  "name": "[variables('skuName')]",
     		  "family": "A"
@@ -265,13 +244,14 @@
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
-                    "name": "MSDeploy",
+                    "name": "[variables('siteDeploymentName')]",
                     "type": "extensions",
                     "dependsOn": [
                         "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
                     ],
                     "properties": {
                         "packageUri": "[parameters('webDeployPackageUri')]",
+                        "name": "MSDeploy",
                         "connectionString": "",
                         "dbType": ""
                     }
@@ -279,25 +259,10 @@
                 {
                     "apiVersion": "2015-08-01",
                     "type": "config",
-                    "name": "appsettings",
-                    "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
-                    ],
-                    "properties": {
-                        "administratorLogin": "[parameters('administratorLogin')]",
-                        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
-                        "applicationLogin": "[parameters('applicationLogin')]",
-                        "applicationLoginPassword": "[parameters('applicationLoginPassword')]",
-    					"applicationADID": "[parameters('ClientId')]",
-    					"applicationADSecret": "[parameters('ActiveDirectoryAppSecret')]"
-                    }
-                },
-                {
-                    "apiVersion": "2015-08-01",
-                    "type": "config",
                     "name": "connectionstrings",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
+                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]",
+                        "[concat('Microsoft.Web/sites/', parameters('siteName'), '/extensions/', variables('siteDeploymentName'))]"
                     ],
                     "properties": {
                         "DefaultConnection": {
@@ -329,7 +294,7 @@
         "password": {
             "type": "string",
             "value": "[parameters('applicationLoginPassword')]"
-        }
+        },
         "region": {
             "type": "string",
             "value": "[parameters('location')]"
