@@ -80,7 +80,7 @@
     		"description": "Tenant Id of the subscription. Get using Get-AzureRmSubscription cmdlet or Get Subscription API"
     		}
     	},
-        "packageUri": {
+        "webDeployPackageUri": {
             "type": "string",
             "metadata": {
     		"description": "Location of the web deploy package."
@@ -88,6 +88,7 @@
         },
         "externalIpAddress": {
             "type": "string",
+            "defaultValue": "0.0.0.0",
             "metadata": {
     		"description": "External IP address of the machine which ran the predeployment script."
     		}
@@ -109,7 +110,7 @@
     	"skuName": "Standard",
     	"enableVaultForVolumeEncryption": false,
     	"enableVaultForDeployment": false,
-    	"enableVaultforTemplateDeployment": false,
+    	"enableVaultforTemplateDeployment": true,
     	"appKeysPermissions": ["get", "wrapkey", "unwrapkey", "sign", "verify"],
     	"appSecretPermissions": ["list", "get" ],
     	"userKeysPermissions": ["create", "get", "wrapkey", "unwrapkey", "sign", "verify"], 
@@ -213,6 +214,7 @@
         },
     	{
     	  "type": "Microsoft.KeyVault/vaults",
+          "comments": "Key vault access policies are configured in post-deploy steps",
     	  "name": "[variables('defaultKeyVaultName')]",
     	  "apiVersion": "2015-06-01",
     	  "location": "[parameters('location')]",
@@ -221,23 +223,6 @@
     		"enabledForTemplateDeployment": "[variables('enableVaultforTemplateDeployment')]",
     		"enabledForVolumeEncryption": "[variables('enableVaultForVolumeEncryption')]",
     		"tenantId": "[parameters('tenantId')]",
-    		"accessPolicies": [
-    		  {
-    			"tenantId": "[parameters('tenantId')]",
-    			"objectId": "[parameters('ApplicationObjectId')]",
-    			"permissions":{
-    				"keys": "[variables('appKeysPermissions')]",
-    				"secrets" : "[variables('appSecretPermissions')]"			  
-    			}
-    		  },
-    		  {
-    			"tenantId": "[parameters('tenantId')]",
-    			"objectId": "[parameters('userObjectID')]",
-    			"permissions":{
-    				"keys": "[variables('userKeysPermissions')]",
-    				"secrets" : "[variables('userSecretPermissions')]"			  
-    				}
-    		  }
     		],
     		"sku": {
     		  "name": "[variables('skuName')]",
@@ -286,7 +271,7 @@
                         "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
                     ],
                     "properties": {
-                        "packageUri": "[parameters('packageUri')]",
+                        "packageUri": "[parameters('webDeployPackageUri')]",
                         "connectionString": "",
                         "dbType": ""
                     }
@@ -333,13 +318,25 @@
             "type": "string",
             "value": "[variables('defaultSqlDatabaseName')]"
         },
-        "sqlServerUsername": {
+        "username": {
             "type": "string",
             "value": "[concat(parameters('applicationLogin'), '@', variables('defaultSqlServerName'))]"
         },
-        "sqlServerPassword": {
+        "password": {
             "type": "string",
             "value": "[parameters('applicationLoginPassword')]"
+        }
+        "region": {
+            "type": "string",
+            "value": "[parameters('location')]"
+        },
+        "keyVaultName": {
+            "type": "string",
+            "value": "[variables('defaultKeyVaultName')]"
+        },
+        "siteName": {
+            "type": "string",
+            "value": "[parameters('siteName')]"
         }
     }
 }
