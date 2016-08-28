@@ -23,4 +23,6 @@ Post-deployment
 0. Runs SQL INSERT script against the database.
 
 Sample deployment:
-* `.\predeploy my-resource-group-name mystorageaccountname`
+* `.\simulate_deployment`
+
+**Note:** You may want to edit some of the parameters supplied by the simulate\_deployment script.
