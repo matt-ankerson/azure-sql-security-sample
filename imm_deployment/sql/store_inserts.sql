@@ -3,7 +3,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-SET IDENTITY_INSERT [dbo].[Customers] ON 
+INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'376f23d3-7caf-49be-95cb-17d65be4f0af', NULL, 0, N'ABko+BO9HAfOqj0/fffs4WKSBaMIoww1iSs6WeJWBWgmrymphRs8bsWAIMfFIHUyeA==', N'38e57991-d484-4627-9194-329fd356ff87', NULL, 0, 0, NULL, 0, 0, N'alice@contoso.com')
+INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'c5834663-0d2d-4089-8dda-f0ede35e4152', NULL, 0, N'AB54hSnUejqCfTTOy9BHs0m1jxYgFbdRnS+IigFEuy/npP5eNPGCV8GgzARnwEWStw==', N'25fc5209-6664-43d7-a678-200eb6770f71', NULL, 0, 0, NULL, 0, 0, N'rachel@contoso.com')
+
+--SET IDENTITY_INSERT [dbo].[Customers] ON 
 
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (1, N'7080500924846561', N'Catherine', N'Abel', N'R.', N'57251 Serene Blvd', N'Van Nuys', N'91411', N'CA', CAST(N'1996-09-10' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (2, N'1754110183784465', N'Kim', N'Abercrombie', N'', N'Tanger Factory', N'Branch', N'55056', N'MN', CAST(N'1967-06-05' AS Date))
@@ -96,10 +99,10 @@ INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleN
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (89, N'1898923728092678', N'Megan', N'Davis', N'N.', N'48995 Evergreen Wy.', N'Everett', N'98201', N'WA', CAST(N'1983-10-14' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (90, N'9629966479962878', N'Alvaro', N'De Matos Miranda Filho', N'', N'Mountain Square', N'Upland', N'91786', N'CA', CAST(N'1962-04-25' AS Date))
 INSERT [dbo].[Customers] ([CustomerId], [SSN], [FirstName], [LastName], [MiddleName], [StreetAddress], [City], [ZipCode], [State], [BirthDate]) VALUES (271, N'8706874375267103', N'Caroline', N'Vicknair', N'A.', N'660 Lindbergh', N'Saint Louis', N'63103', N'MS', CAST(N'2007-09-10' AS Date))
-SET IDENTITY_INSERT [dbo].[Customers] OFF
-SET IDENTITY_INSERT [dbo].[Visits] ON 
+--SET IDENTITY_INSERT [dbo].[Customers] OFF
+--SET IDENTITY_INSERT [dbo].[Visits] ON 
 
 INSERT [dbo].[Visits] ([VisitId], [CustomerId], [Date], [Reason], [Treatment], [FollowUpDate]) VALUES (1, 1, CAST(N'2016-01-10' AS Date), N'Headache', N'A nap', NULL)
 INSERT [dbo].[Visits] ([VisitId], [CustomerId], [Date], [Reason], [Treatment], [FollowUpDate]) VALUES (2, 1, CAST(N'2016-01-10' AS Date), N'Worse headache', N'A longer nap', NULL)
-SET IDENTITY_INSERT [dbo].[Visits] OFF
+--SET IDENTITY_INSERT [dbo].[Visits] OFF
 GO

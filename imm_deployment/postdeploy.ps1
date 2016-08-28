@@ -3,7 +3,10 @@ param (
     [string] $global:resourceGroupName,
 
     [Parameter(Mandatory = $true, HelpMessage = 'The name of the Azure Active Directory instance for use with this deployment.')]
-    [string] $global:aadTenant# = "intergenusalive.onmicrosoft.com"
+    [string] $global:aadTenant,# = "intergenusalive.onmicrosoft.com"
+
+    [Parameter(Mandatory = $true, HelpMessage = 'User principal name for creating access permissions in Azure Key Vault.')]
+    [string] $global:userPrincipalName
 )
 
 #
@@ -133,15 +136,14 @@ $oauthObject = foreach($i in $result.oauth2Permissions) { $i }
 
 # Tenant ID
 $global:aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
+# User objectID
+$global:aadUserObjectId = Get-AzureRmAdUser -UserPrincipalName $global:userPrincipalName | Select-Object -ExpandProperty Id 
 # Application object ID
 $global:aadApplicationObjectId = $result | Select-Object -ExpandProperty objectId
 # App ID / Client ID
 $global:aadClientId = $result | Select-Object -ExpandProperty appId
 # Application Secret/Key
 $global:aadAppSecret = $keyObject | Select-Object -ExpandProperty keyId
-# User object ID
-$global:aadUserObjectId = $oauthObject | Select-Object -ExpandProperty id
-
 
 #----------------------------------#
 # Create Key Vault Access Policies #
@@ -155,7 +157,7 @@ Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $globa
 
 # Create access policy for user.
 # - grants the user permission to read and write secrets
-#Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadUserObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
+Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
 
 
 #------------------------------#

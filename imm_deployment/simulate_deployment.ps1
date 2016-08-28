@@ -5,7 +5,7 @@
 # - Invoke the post-deploy script.
 #
 
-$resourceGroupName = "sql-security-pwyw"
+$resourceGroupName = "sql-security-qrew"
 
 
 #------------------------------#
@@ -52,7 +52,7 @@ $armResult = New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrou
 #--------------------#
 
 if ($armResult) {
-    . "$(Split-Path $MyInvocation.MyCommand.Path)\postdeploy.ps1" $resourceGroupName "intergenusalive.onmicrosoft.com"
+    . "$(Split-Path $MyInvocation.MyCommand.Path)\postdeploy.ps1" $resourceGroupName "intergenusalive.onmicrosoft.com" "matta@intergenusalive.onmicrosoft.com"
 } else {
     Write-Warning "ARM provisioning failed."
 }
