@@ -20,8 +20,10 @@ namespace ContosoOnlineBikeStore
 
         static void InitializeAzureKeyVaultProvider()
         {
-            string clientId = "65c01ff5-add9-47dc-8a18-08ade7b516a4";
-            string clientSecret = "qgb0M91ysvhs+2rzpyKo+Nv/nbR/O+ZV88DZ/fseHEk=";
+            //string clientId = "65c01ff5-add9-47dc-8a18-08ade7b516a4";
+            //string clientSecret = "qgb0M91ysvhs+2rzpyKo+Nv/nbR/O+ZV88DZ/fseHEk=";
+            string clientId = System.Environment.GetEnvironmentVariable("applicationADID");
+            string clientSecret = System.Environment.GetEnvironmentVariable("applicationADSecret");
 
             _clientCredential = new ClientCredential(clientId, clientSecret);
 
