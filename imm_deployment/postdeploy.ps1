@@ -1,153 +1,180 @@
-param (
-    [Parameter(Mandatory = $true, HelpMessage = 'Resource Group name for this deployment.')]
-    [string] $resourceGroupName,
+Function Start-ImmersionPostDeployScript
+{
+    param(
+        [Parameter(Mandatory=$true)]
+        [PSCredential]
+        $Credentials,
+        
+        [Parameter(Mandatory=$true)]
+        [string]
+        $TenantId,
 
-    [Parameter(Mandatory = $true, HelpMessage = 'The name of the Azure Active Directory instance for use with this deployment.')]
-    [string] $aadTenant,
+        [Parameter(Mandatory=$true)]
+        [string]
+        $SubscriptionId,
+                                
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Region,
 
-    [Parameter(Mandatory = $true, HelpMessage = 'User principal name for creating access permissions in Azure Key Vault.')]
-    [string] $userPrincipalName
-)
+        [Parameter(Mandatory=$true)]
+        [string]
+        $UserEmail,
 
-#
-# Post-deployment steps - to be run after the successful
-#   deployment of 'deploytemplate.json'.
-#
-#   Steps completed:
-#       - Get outputs from ARM deployment.
-#       - Provisions application in Azure AD.
-#       - Creates access policies for Azure Key Vault.
-#       - Updates config for web application
-#       - Inserts seed data in SQL database.
-#
+        [Parameter(Mandatory=$true)]
+        [string]
+        $UserPassword,
 
-#---------------------------------------------#
-# Get the outputs from the latest deployment. #
-#---------------------------------------------#
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ResourceGroupName,
+                                
+        [Parameter(Mandatory=$true)]
+        [string]
+        $StorageAccountName
+    )
 
-Write-Host 'Fetching ARM outputs'
+    #
+    # Post-deployment steps - to be run after the successful
+    #   deployment of the ARM template.
+    #
+    #   Steps completed:
+    #       - Get outputs from ARM deployment.
+    #       - Provisions application in Azure AD.
+    #       - Creates access policies for Azure Key Vault.
+    #       - Updates config for web application
+    #       - Inserts seed data in SQL database.
+    #
 
-$deployOutputs = (Get-AzureRMResourceGroupDeployment "$($resourceGroupName)").Outputs
+    Connect-MsolService -Credential $Credentials
 
-#--------------------------------#
-# Setup some necessary variables #
-#--------------------------------#
-$region = $deployOutputs['region'].value
-$username = $deployOutputs['username'].value
-$password = $deployOutputs['password'].value
+    #---------------------------------------------#
+    # Get the outputs from the latest deployment. #
+    #---------------------------------------------#
 
-$keyVaultName = $deployOutputs['keyVaultName'].value
-$siteName = $deployOutputs['siteName'].value
-$sqlServerName = $deployOutputs['sqlServerName'].value
-$sqlServerDbName = $deployOutputs['sqlServerDbName'].value
-$sqlServerUsername = $deployOutputs['sqlServerUsername'].value
+    Write-Host 'Fetching ARM outputs'
 
-$aadAppPrincipalId = New-Guid
-$aadSecretGuid = New-Guid
-$aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($aadSecretGuid)
-$aadDisplayName = "sqlinjapp$resourceGroupName"
-$aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
+    $deployOutputs = (Get-AzureRMResourceGroupDeployment "$($ResourceGroupName)").Outputs
 
-$keyCredential = New-Object  Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADKeyCredential
-$keyCredential.StartDate = [DateTime]::UtcNow.AddDays(-1).ToString('u').Replace(' ', 'T')
-$keyCredential.EndDate= [DateTime]::UtcNow.AddDays(365).ToString('u').Replace(' ', 'T');
-$keyCredential.KeyId = $aadAppPrincipalId
-$keyCredential.Type = "Symmetric"
-$keyCredential.Usage = "Verify"
-$keyCredential.Value = [System.Convert]::ToBase64String($aadSecretBytes)
+    #--------------------------------#
+    # Setup some necessary variables #
+    #--------------------------------#
+    $region = $deployOutputs['region'].value
+    $username = $deployOutputs['username'].value
+    $password = $deployOutputs['password'].value
 
-#------------------------------------#
-# Provision a new application in AAD #
-#------------------------------------#
+    $keyVaultName = $deployOutputs['keyVaultName'].value
+    $siteName = $deployOutputs['siteName'].value
+    $sqlServerName = $deployOutputs['sqlServerName'].value
+    $sqlServerDbName = $deployOutputs['sqlServerDbName'].value
+    $sqlServerUsername = $deployOutputs['sqlServerUsername'].value
 
-Write-Host 'Provisioning application in AAD'
+    $aadAppPrincipalId = New-Guid
+    $aadSecretGuid = New-Guid
+    $aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($aadSecretGuid)
+    $aadDisplayName = "sqlinjapp$ResourceGroupName"
+    $aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
 
-# Try retrieve AD application
-$aadApplication = Get-AzureRmAdApplication -IdentifierUri "http://$siteName"
+    $keyCredential = New-Object  Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADKeyCredential
+    $keyCredential.StartDate = [DateTime]::UtcNow.AddDays(-1).ToString('u').Replace(' ', 'T')
+    $keyCredential.EndDate= [DateTime]::UtcNow.AddDays(365).ToString('u').Replace(' ', 'T');
+    $keyCredential.KeyId = $aadAppPrincipalId
+    $keyCredential.Type = "Symmetric"
+    $keyCredential.Usage = "Verify"
+    $keyCredential.Value = [System.Convert]::ToBase64String($aadSecretBytes)
 
-if ($aadApplication -eq $null) {
-    # Create AAD application
-    $aadApplication = New-AzureRmADApplication -DisplayName $aadDisplayName -HomePage "http://$siteName" -IdentifierUris "http://$siteName" -KeyCredentials $keyCredential
-    # Create service principal for AD application.
-    $aadAppServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $aadApplication.ApplicationId
-} else {
-    # AAD application exists, get its service principal.
-    $aadAppServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $aadDisplayName
-}
+    #------------------------------------#
+    # Provision a new application in AAD #
+    #------------------------------------#
 
+    Write-Host 'Provisioning application in AAD'
 
-Write-Host 'Extracting configuration values from AAD response'
+    # Try retrieve AD application
+    $aadApplication = Get-AzureRmAdApplication -IdentifierUri "http://$siteName"
 
-# User objectID
-$aadUserObjectId = Get-AzureRmAdUser -UserPrincipalName $userPrincipalName | Select-Object -ExpandProperty Id
-
-# Application's service principal's objectID
-$aadAppServicePrincipalObjectId = $aadAppServicePrincipal.Id
-# Application object ID
-$aadAppObjectId = $aadApplication.ApplicationObjectId
-# App ID / Client ID
-$aadClientId = $aadApplication.ApplicationId
-
-#----------------------------------#
-# Create Key Vault Access Policies #
-#----------------------------------#
-
-Write-Host "Creating Key Vault Access Policies for $($keyVaultName)"
-
-# Create access policy for application.
-# - grants the app permission to read secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ApplicationId $aadClientId -ObjectId $aadAppServicePrincipalObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
-
-# Create access policy for user.
-# - grants the user permission to read and write secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
-
-
-#------------------------------#
-# Update website configuration #
-#------------------------------#
-
-Write-Host 'Updating site config'
-
-# Get the web app.
-$webApp = Get-AzureRmWebApp -ResourceGroupName "$($resourceGroupName)" -Name "$($siteName)"
-# Pull out the site settings.
-$appSettingsList = $webApp.SiteConfig.AppSettings
-
-# Build an object containing the app settings.
-$appSettings = @{}
-ForEach ($kvp in $appSettingsList) {
-    $appSettings[$kvp.Name] = $kvp.Value
-}
-
-# Add the necessary settings to the settings object
-$appSettings['administratorLogin'] = $username
-$appSettings['administratorLoginPassword'] = $password
-$appSettings['applicationLogin'] = $username
-$appSettings['applicationLoginPassword'] = $password
-$appSettings['applicationADID'] = $aadClientId.ToString()
-$appSettings['applicationADSecret'] = $aadSecretGuid.ToString()
-
-# Push the new app settings back to the web app
-Set-AzureRmWebApp -ResourceGroupName "$($resourceGroupName)" -Name "$($siteName)" -AppSettings $appSettings
+    if ($aadApplication -eq $null) {
+        # Create AAD application
+        $aadApplication = New-AzureRmADApplication -DisplayName $aadDisplayName -HomePage "http://$siteName" -IdentifierUris "http://$siteName" -KeyCredentials $keyCredential
+        # Create service principal for AD application.
+        $aadAppServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $aadApplication.ApplicationId
+    } else {
+        # AAD application exists, get its service principal.
+        $aadAppServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $aadDisplayName
+    }
 
 
-#----------------------------------------------#
-# Run SQL scripts to populate necessary tables #
-#----------------------------------------------#
+    Write-Host 'Extracting configuration values from AAD response'
 
-Write-Host 'Executing database bootstrap scripts'
+    # User objectID
+    $aadUserObjectId = Get-AzureRmAdUser -UserPrincipalName $UserEmail | Select-Object -ExpandProperty Id
 
-$sqlServer         = $sqlServerName
-$sqlServerUsername = $sqlServerUsername
-$sqlServerPassword = $password
-$sqlServerDatabase = $sqlServerDbName
+    # Application's service principal's objectID
+    $aadAppServicePrincipalObjectId = $aadAppServicePrincipal.Id
+    # Application object ID
+    $aadAppObjectId = $aadApplication.ApplicationObjectId
+    # App ID / Client ID
+    $aadClientId = $aadApplication.ApplicationId
 
-$sqlTimeoutSeconds = [int] [TimeSpan]::FromMinutes(8).TotalSeconds 
-$sqlConnectionTimeoutSeconds = [int] [TimeSpan]::FromMinutes(2).TotalSeconds
+    #----------------------------------#
+    # Create Key Vault Access Policies #
+    #----------------------------------#
 
-# sql query includes a 1 min wait for reasonable certainty that the database is ready.
-$sqlQuery = "
+    Write-Host "Creating Key Vault Access Policies for $($keyVaultName)"
+
+    # Create access policy for application.
+    # - grants the app permission to read secrets
+    Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ApplicationId $aadClientId -ObjectId $aadAppServicePrincipalObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
+
+    # Create access policy for user.
+    # - grants the user permission to read and write secrets
+    Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
+
+
+    #------------------------------#
+    # Update website configuration #
+    #------------------------------#
+
+    Write-Host 'Updating site config'
+
+    # Get the web app.
+    $webApp = Get-AzureRmWebApp -ResourceGroupName "$($ResourceGroupName)" -Name "$($siteName)"
+    # Pull out the site settings.
+    $appSettingsList = $webApp.SiteConfig.AppSettings
+
+    # Build an object containing the app settings.
+    $appSettings = @{}
+    ForEach ($kvp in $appSettingsList) {
+        $appSettings[$kvp.Name] = $kvp.Value
+    }
+
+    # Add the necessary settings to the settings object
+    $appSettings['administratorLogin'] = $username
+    $appSettings['administratorLoginPassword'] = $password
+    $appSettings['applicationLogin'] = $username
+    $appSettings['applicationLoginPassword'] = $password
+    $appSettings['applicationADID'] = $aadClientId.ToString()
+    $appSettings['applicationADSecret'] = $aadSecretGuid.ToString()
+
+    # Push the new app settings back to the web app
+    Set-AzureRmWebApp -ResourceGroupName "$($ResourceGroupName)" -Name "$($siteName)" -AppSettings $appSettings
+
+
+    #----------------------------------------------#
+    # Run SQL scripts to populate necessary tables #
+    #----------------------------------------------#
+
+    Write-Host 'Executing database bootstrap scripts'
+
+    $sqlServer         = $sqlServerName
+    $sqlServerUsername = $sqlServerUsername
+    $sqlServerPassword = $password
+    $sqlServerDatabase = $sqlServerDbName
+
+    $sqlTimeoutSeconds = [int] [TimeSpan]::FromMinutes(8).TotalSeconds 
+    $sqlConnectionTimeoutSeconds = [int] [TimeSpan]::FromMinutes(2).TotalSeconds
+
+    # sql query includes a 1 min wait for reasonable certainty that the database is ready.
+    $sqlQuery = "
 WAITFOR DELAY '00:01:00'
 
 SET ANSI_NULLS ON
@@ -260,15 +287,14 @@ INSERT [dbo].[Visits] ([VisitId], [CustomerId], [Date], [Reason], [Treatment], [
 SET IDENTITY_INSERT [dbo].[Visits] OFF
 GO"
 
-Push-Location
-try {
-    Invoke-Sqlcmd -ServerInstance $sqlServer -Username $sqlServerUsername -Password $sqlServerPassword -Database $sqlServerDatabase -Query $sqlQuery -QueryTimeout $sqlTimeoutSeconds -ConnectionTimeout $sqlConnectionTimeoutSeconds
-} catch {
-    Write-Warning "Error executing sql command (consider executing manually)`n$($_.Exception)"
+    Push-Location
+    try {
+        Invoke-Sqlcmd -ServerInstance $sqlServer -Username $sqlServerUsername -Password $sqlServerPassword -Database $sqlServerDatabase -Query $sqlQuery -QueryTimeout $sqlTimeoutSeconds -ConnectionTimeout $sqlConnectionTimeoutSeconds
+    } catch {
+        Write-Warning "Error executing sql command (consider executing manually)`n$($_.Exception)"
+    }
+    finally {
+        # Work around Invoke-Sqlcmd randomly changing the working directory
+        Pop-Location
+    }
 }
-finally {
-    # Work around Invoke-Sqlcmd randomly changing the working directory
-    Pop-Location
-}
-
-Write-Host "Bye"

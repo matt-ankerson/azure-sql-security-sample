@@ -5,13 +5,15 @@
 # - Invoke the post-deploy script.
 #
 
-$resourceGroupName = "sql-security-004"
-
-
-# Get some credentials for msol
+$resourceGroupName = "sql-security-005"
 $msolcred = Get-Credential
-# Connect
-Connect-MsolService -Credential $msolcred
+$tenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
+$subscriptionId = Get-AzureRmSubscription | Select-Object -ExpandProperty SubscriptionId
+$region = "East US"
+$userEmail = "matta@intergenusalive.onmicrosoft.com"
+
+# Bring the post deploy function into scope
+. "$(Split-Path $MyInvocation.MyCommand.Path)\postdeploy.ps1"
 
 #------------------------------#
 # Get or create Resource group #
@@ -57,7 +59,8 @@ $armResult = New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGrou
 #--------------------#
 
 if ($armResult) {
-    . "$(Split-Path $MyInvocation.MyCommand.Path)\postdeploy.ps1" $resourceGroupName "intergenusalive.onmicrosoft.com" "matta@intergenusalive.onmicrosoft.com"
+    # Start post-deploy
+    Start-ImmersionPostDeployScript $msolcred $tenantId $subscriptionId $region $userEmail "userPassword" $resourceGroupName "storageAccountName"
 } else {
     Write-Warning "ARM provisioning failed."
 }
