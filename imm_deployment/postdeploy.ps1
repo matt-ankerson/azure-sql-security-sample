@@ -1,12 +1,12 @@
 param (
     [Parameter(Mandatory = $true, HelpMessage = 'Resource Group name for this deployment.')]
-    [string] $global:resourceGroupName,
+    [string] $resourceGroupName,
 
     [Parameter(Mandatory = $true, HelpMessage = 'The name of the Azure Active Directory instance for use with this deployment.')]
-    [string] $global:aadTenant,# = "intergenusalive.onmicrosoft.com"
+    [string] $aadTenant,
 
     [Parameter(Mandatory = $true, HelpMessage = 'User principal name for creating access permissions in Azure Key Vault.')]
-    [string] $global:userPrincipalName
+    [string] $userPrincipalName
 )
 
 #
@@ -21,143 +21,86 @@ param (
 #       - Inserts seed data in SQL database.
 #
 
-#------------------------------#
-# Set up some useful functions #
-#------------------------------#
-
-# Returns the authentication token for a given Tenant Name.
-function GetAuthToken
-{
-       param
-       (
-              [Parameter(Mandatory=$true)]
-              $TenantName
-       )
- 
-       $adal = "${env:ProgramFiles(x86)}\Microsoft SDKs\Azure\PowerShell\ServiceManagement\Azure\Services\Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
- 
-       $adalforms = "${env:ProgramFiles(x86)}\Microsoft SDKs\Azure\PowerShell\ServiceManagement\Azure\Services\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll"
- 
-       [System.Reflection.Assembly]::LoadFrom($adal) | Out-Null
- 
-       [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
- 
-       $clientId = "1950a258-227b-4e31-a9cf-717495945fc2" 
- 
-       $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
- 
-       $resourceAppIdURI = "https://graph.windows.net"
- 
-       $authority = "https://login.windows.net/$TenantName"
- 
-       $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
- 
-       $authResult = $authContext.AcquireToken($resourceAppIdURI, $clientId,$redirectUri, "Auto")
- 
-       return $authResult
-}
-
 #---------------------------------------------#
 # Get the outputs from the latest deployment. #
 #---------------------------------------------#
 
 Write-Host 'Fetching ARM outputs'
 
-$global:deployOutputs = (Get-AzureRMResourceGroupDeployment "$($global:resourceGroupName)").Outputs
+$deployOutputs = (Get-AzureRMResourceGroupDeployment "$($resourceGroupName)").Outputs
 
 #--------------------------------#
 # Setup some necessary variables #
 #--------------------------------#
-$global:region = $global:deployOutputs['region'].value
-$global:username = $global:deployOutputs['username'].value
-$global:password = $global:deployOutputs['password'].value
+$region = $deployOutputs['region'].value
+$username = $deployOutputs['username'].value
+$password = $deployOutputs['password'].value
 
-$global:keyVaultName = $global:deployOutputs['keyVaultName'].value
-$global:siteName = $global:deployOutputs['siteName'].value
-$global:sqlServerName = $global:deployOutputs['sqlServerName'].value
-$global:sqlServerDbName = $global:deployOutputs['sqlServerDbName'].value
-$global:sqlServerUsername = $global:deployOutputs['sqlServerUsername'].value
+$keyVaultName = $deployOutputs['keyVaultName'].value
+$siteName = $deployOutputs['siteName'].value
+$sqlServerName = $deployOutputs['sqlServerName'].value
+$sqlServerDbName = $deployOutputs['sqlServerDbName'].value
+$sqlServerUsername = $deployOutputs['sqlServerUsername'].value
 
-$global:aadSecretGuid = New-Guid
-$global:aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($global:aadSecretGuid)
-$global:aadDisplayName = "sqlinj$($global:resourceGroupName)"
-$global:aadIdentifierUris = @("https://$($global:resourceGroupName)")
-$global:aadSecret = @{
-    'type'='Symmetric';
-    'usage'='Verify';
-    'endDate'=[DateTime]::UtcNow.AddDays(365).ToString('u').Replace(' ', 'T');
-    'keyId'=$global:aadSecretGuid;
-    'startDate'=[DateTime]::UtcNow.AddDays(-1).ToString('u').Replace(' ', 'T');  
-    'value'=[System.Convert]::ToBase64String($global:aadSecretBytes);
-}
+$aadAppPrincipalId = New-Guid
+$aadSecretGuid = New-Guid
+$aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($aadSecretGuid)
+$aadDisplayName = "sqlinjapp$resourceGroupName"
+$aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
 
-# ADAL JSON token - necessary for making requests to Graph API
-$global:token = GetAuthToken -TenantName $global:aadTenant
-# REST API header with auth token
-$global:authHeader = @{
-    'Content-Type'='application/json';
-    'Authorization'=$global:token.CreateAuthorizationHeader()
-}
+$keyCredential = New-Object  Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADKeyCredential
+$keyCredential.StartDate = [DateTime]::UtcNow.AddDays(-1).ToString('u').Replace(' ', 'T')
+$keyCredential.EndDate= [DateTime]::UtcNow.AddDays(365).ToString('u').Replace(' ', 'T');
+$keyCredential.KeyId = $aadAppPrincipalId
+$keyCredential.Type = "Symmetric"
+$keyCredential.Usage = "Verify"
+$keyCredential.Value = [System.Convert]::ToBase64String($aadSecretBytes)
 
 #------------------------------------#
 # Provision a new application in AAD #
 #------------------------------------#
-#
-# Note: Running this script multiple times will result in a HTTP error
-#       as the application has already been created.
-#
 
 Write-Host 'Provisioning application in AAD'
 
-$resource = "applications"
-$payload = @{
-    'displayName' = $global:aadDisplayName;
-    'homepage' = 'https://www.contoso.com';
-    'identifierUris' = $global:aadIdentifierUris;
-    'keyCredentials' = @($global:aadSecret)
+# Try retrieve AD application
+$aadApplication = Get-AzureRmAdApplication -IdentifierUri "http://$siteName"
+
+if ($aadApplication -eq $null) {
+    # Create AAD application
+    $aadApplication = New-AzureRmADApplication -DisplayName $aadDisplayName -HomePage "http://$siteName" -IdentifierUris "http://$siteName" -KeyCredentials $keyCredential
+    # Create service principal for AD application.
+    $aadAppServicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $aadApplication.ApplicationId
+} else {
+    # AAD application exists, get its service principal.
+    $aadAppServicePrincipal = Get-AzureRmADServicePrincipal -SearchString $aadDisplayName
 }
-$payload = ConvertTo-Json -InputObject $payload
-$uri = "https://graph.windows.net/$($global:aadTenant)/$($resource)?api-version=1.6"
-$result = (Invoke-RestMethod -Uri $uri -Headers $global:authHeader -Body $payload -Method POST -Verbose).value
 
 
-# Interrogate AAD for the necessary configuration values.
+Write-Host 'Extracting configuration values from AAD response'
 
-Write-Host 'Pulling configuration values from AAD'
-
-# Pull the app manifest for the application.
-$resource = "applications"
-$uri = "https://graph.windows.net/$($global:tenant)/$($resource)?api-version=1.6&`$filter`=identifierUris/any(c:c+eq+'$($global:aadIdentifierUris)')"
-$result = (Invoke-RestMethod -Uri $uri -Headers $global:authHeader -Method GET -Verbose).value
-
-# Extract configuration values
-$keyObject = foreach($i in $result.keyCredentials) { $i }
-$oauthObject = foreach($i in $result.oauth2Permissions) { $i }
-
-# Tenant ID
-$global:aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
 # User objectID
-$global:aadUserObjectId = Get-AzureRmAdUser -UserPrincipalName $global:userPrincipalName | Select-Object -ExpandProperty Id 
+$aadUserObjectId = Get-AzureRmAdUser -UserPrincipalName $userPrincipalName | Select-Object -ExpandProperty Id
+
+# Application's service principal's objectID
+$aadAppServicePrincipalObjectId = $aadAppServicePrincipal.Id
 # Application object ID
-$global:aadApplicationObjectId = $result | Select-Object -ExpandProperty objectId
+$aadAppObjectId = $aadApplication.ApplicationObjectId
 # App ID / Client ID
-$global:aadClientId = $result | Select-Object -ExpandProperty appId
-# Application Secret/Key
-$global:aadAppSecret = $keyObject | Select-Object -ExpandProperty keyId
+$aadClientId = $aadApplication.ApplicationId
 
 #----------------------------------#
 # Create Key Vault Access Policies #
 #----------------------------------#
 
-Write-Host "Creating Key Vault Access Policies for $($global:keyVaultName)"
+Write-Host "Creating Key Vault Access Policies for $($keyVaultName)"
 
 # Create access policy for application.
 # - grants the app permission to read secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadApplicationObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
+Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ApplicationId $aadClientId -ObjectId $aadAppServicePrincipalObjectId -PermissionsToSecrets @('get','list') -PermissionsToKeys get,wrapkey,unwrapkey,sign,verify
 
 # Create access policy for user.
 # - grants the user permission to read and write secrets
-Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $global:aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
+Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
 
 
 #------------------------------#
@@ -167,7 +110,7 @@ Set-AzureRmKeyVaultAccessPolicy -VaultName $global:keyVaultName -ObjectId $globa
 Write-Host 'Updating site config'
 
 # Get the web app.
-$webApp = Get-AzureRmWebApp -ResourceGroupName "$($global:resourceGroupName)" -Name "$($global:siteName)"
+$webApp = Get-AzureRmWebApp -ResourceGroupName "$($resourceGroupName)" -Name "$($siteName)"
 # Pull out the site settings.
 $appSettingsList = $webApp.SiteConfig.AppSettings
 
@@ -178,15 +121,15 @@ ForEach ($kvp in $appSettingsList) {
 }
 
 # Add the necessary settings to the settings object
-$appSettings['administratorLogin'] = $global:username
-$appSettings['administratorLoginPassword'] = $global:password
-$appSettings['applicationLogin'] = $global:username
-$appSettings['applicationLoginPassword'] = $global:password
-$appSettings['applicationADID'] = $global:aadClientId.ToString()
-$appSettings['applicationADSecret'] = $global:aadAppSecret.ToString()
+$appSettings['administratorLogin'] = $username
+$appSettings['administratorLoginPassword'] = $password
+$appSettings['applicationLogin'] = $username
+$appSettings['applicationLoginPassword'] = $password
+$appSettings['applicationADID'] = $aadClientId.ToString()
+$appSettings['applicationADSecret'] = $aadSecretGuid.ToString()
 
 # Push the new app settings back to the web app
-Set-AzureRmWebApp -ResourceGroupName "$($global:resourceGroupName)" -Name "$($global:siteName)" -AppSettings $appSettings
+Set-AzureRmWebApp -ResourceGroupName "$($resourceGroupName)" -Name "$($siteName)" -AppSettings $appSettings
 
 
 #----------------------------------------------#
@@ -195,18 +138,26 @@ Set-AzureRmWebApp -ResourceGroupName "$($global:resourceGroupName)" -Name "$($gl
 
 Write-Host 'Executing database bootstrap scripts'
 
-$sqlServer         = $global:sqlServerName
-$sqlServerUsername = $global:sqlServerUsername
-$sqlServerPassword = $global:password
-$sqlServerDatabase = $global:sqlServerDbName
+$sqlServer         = $sqlServerName
+$sqlServerUsername = $sqlServerUsername
+$sqlServerPassword = $password
+$sqlServerDatabase = $sqlServerDbName
 
 $sqlTimeoutSeconds = [int] [TimeSpan]::FromMinutes(8).TotalSeconds 
 $sqlConnectionTimeoutSeconds = [int] [TimeSpan]::FromMinutes(2).TotalSeconds
 
-$sqlQuery = "SET ANSI_NULLS ON
+# sql query includes a 1 min wait for reasonable certainty that the database is ready.
+$sqlQuery = "
+WAITFOR DELAY '00:01:00'
+
+SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+
+
+INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'376f23d3-7caf-49be-95cb-17d65be4f0af', NULL, 0, N'ABko+BO9HAfOqj0/fffs4WKSBaMIoww1iSs6WeJWBWgmrymphRs8bsWAIMfFIHUyeA==', N'38e57991-d484-4627-9194-329fd356ff87', NULL, 0, 0, NULL, 0, 0, N'alice@contoso.com')
+INSERT [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName]) VALUES (N'c5834663-0d2d-4089-8dda-f0ede35e4152', NULL, 0, N'AB54hSnUejqCfTTOy9BHs0m1jxYgFbdRnS+IigFEuy/npP5eNPGCV8GgzARnwEWStw==', N'25fc5209-6664-43d7-a678-200eb6770f71', NULL, 0, 0, NULL, 0, 0, N'rachel@contoso.com')
 
 SET IDENTITY_INSERT [dbo].[Customers] ON 
 

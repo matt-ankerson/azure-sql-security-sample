@@ -247,7 +247,8 @@
                     "name": "[variables('siteDeploymentName')]",
                     "type": "extensions",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]"
+                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]",
+                        "[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'), '/databases/',variables('defaultSqlDatabaseName'))]"
                     ],
                     "properties": {
                         "packageUri": "[parameters('webDeployPackageUri')]",

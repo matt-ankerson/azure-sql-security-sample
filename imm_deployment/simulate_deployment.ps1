@@ -5,8 +5,13 @@
 # - Invoke the post-deploy script.
 #
 
-$resourceGroupName = "sql-security-qrew"
+$resourceGroupName = "sql-security-004"
 
+
+# Get some credentials for msol
+$msolcred = Get-Credential
+# Connect
+Connect-MsolService -Credential $msolcred
 
 #------------------------------#
 # Get or create Resource group #
