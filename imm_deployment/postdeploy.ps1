@@ -42,7 +42,8 @@ Function Start-ImmersionPostDeployScript
     #       - Get outputs from ARM deployment.
     #       - Provisions application in Azure AD.
     #       - Creates access policies for Azure Key Vault.
-    #       - Updates config for web application
+    #       - Updates config for web application.
+    #       - Ensures wep app is live.
     #       - Inserts seed data in SQL database.
     #
 
@@ -173,6 +174,8 @@ Function Start-ImmersionPostDeployScript
 
     # Warm up the site
 
+    Write-Host "Warming up site"
+
     $stop = $false
     $retries = 0
 
@@ -205,8 +208,6 @@ Function Start-ImmersionPostDeployScript
 
     $sqlTimeoutSeconds = [int] [TimeSpan]::FromMinutes(8).TotalSeconds 
     $sqlConnectionTimeoutSeconds = [int] [TimeSpan]::FromMinutes(2).TotalSeconds
-
-    
 
     $sqlQuery = "
 SET ANSI_NULLS ON
