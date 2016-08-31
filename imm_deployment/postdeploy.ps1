@@ -54,7 +54,8 @@ Function Start-ImmersionPostDeployScript
 
     Write-Host 'Fetching ARM outputs'
 
-    $deployOutputs = (Get-AzureRMResourceGroupDeployment "$($ResourceGroupName)").Outputs
+    # Get the outputs of the most recent deployment.
+    $deployOutputs = (Get-AzureRMResourceGroupDeployment $ResourceGroupName | sort Timestamp -Descending | Select-Object -First 1).Outputs
 
     #--------------------------------#
     # Setup some necessary variables #
@@ -65,6 +66,7 @@ Function Start-ImmersionPostDeployScript
 
     $keyVaultName = $deployOutputs['keyVaultName'].value
     $siteName = $deployOutputs['siteName'].value
+    $siteUri = "https://$siteName.azurewebsites.net"
     $sqlServerName = $deployOutputs['sqlServerName'].value
     $sqlServerDbName = $deployOutputs['sqlServerDbName'].value
     $sqlServerUsername = $deployOutputs['sqlServerUsername'].value
@@ -73,7 +75,7 @@ Function Start-ImmersionPostDeployScript
     $aadSecretGuid = New-Guid
     $aadSecretBytes = [System.Text.Encoding]::UTF8.GetBytes($aadSecretGuid)
     $aadDisplayName = "sqlinjapp$ResourceGroupName"
-    $aadTenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
+    $aadTenantId = $TenantId
 
     $keyCredential = New-Object  Microsoft.Azure.Commands.Resources.Models.ActiveDirectory.PSADKeyCredential
     $keyCredential.StartDate = [DateTime]::UtcNow.AddDays(-1).ToString('u').Replace(' ', 'T')
@@ -119,7 +121,7 @@ Function Start-ImmersionPostDeployScript
     # Create Key Vault Access Policies #
     #----------------------------------#
 
-    Write-Host "Creating Key Vault Access Policies for $($keyVaultName)"
+    Write-Host "Creating Key Vault Access Policies for $keyVaultName"
 
     # Create access policy for application.
     # - grants the app permission to read secrets
@@ -129,7 +131,6 @@ Function Start-ImmersionPostDeployScript
     # - grants the user permission to read and write secrets
     Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ObjectId $aadUserObjectId.ToString() -PermissionsToSecrets @('get','list') -PermissionsToKeys create,get,wrapkey,unwrapkey,sign,verify
 
-
     #------------------------------#
     # Update website configuration #
     #------------------------------#
@@ -137,7 +138,7 @@ Function Start-ImmersionPostDeployScript
     Write-Host 'Updating site config'
 
     # Get the web app.
-    $webApp = Get-AzureRmWebApp -ResourceGroupName "$($ResourceGroupName)" -Name "$($siteName)"
+    $webApp = Get-AzureRmWebApp -ResourceGroupName $ResourceGroupName -Name $siteName
     # Pull out the site settings.
     $appSettingsList = $webApp.SiteConfig.AppSettings
 
@@ -156,12 +157,44 @@ Function Start-ImmersionPostDeployScript
     $appSettings['applicationADSecret'] = $aadSecretGuid.ToString()
 
     # Push the new app settings back to the web app
-    Set-AzureRmWebApp -ResourceGroupName "$($ResourceGroupName)" -Name "$($siteName)" -AppSettings $appSettings
+    Set-AzureRmWebApp -ResourceGroupName $ResourceGroupName -Name $siteName -AppSettings $appSettings
 
 
     #----------------------------------------------#
     # Run SQL scripts to populate necessary tables #
     #----------------------------------------------#
+
+    # Note: The application writes the database schema. This script seeds data.
+    #       For this reason: Warm up the site before proceeding to insert data. This
+    #           ensures that the database is ready.
+    #
+    # Alternate solution: sql sleep 1 min for reasonable certainty that the database is ready.
+    # -> WAITFOR DELAY '00:01:00'
+
+    # Warm up the site
+
+    $stop = $false
+    $retries = 0
+
+    do {
+        try {
+            Write-Host "Contacting site at $siteUri"
+            $response = Invoke-WebRequest -Uri $siteUri
+            Write-Host "Verified site is live."
+            $stop = $true
+        } catch {
+            if ($retryCount -gt 10) {
+                Write-Error "Could not contact site after 10 retries. Aborting database seed."
+                $stop = $true
+                return
+            } else {
+                Write-Host "Could not contact site, retrying in 10 seconds."
+                Start-Sleep -Seconds 10
+                $retries = $retries + 1
+            }
+        } 
+    } while ($stop -eq $false)
+
 
     Write-Host 'Executing database bootstrap scripts'
 
@@ -173,10 +206,9 @@ Function Start-ImmersionPostDeployScript
     $sqlTimeoutSeconds = [int] [TimeSpan]::FromMinutes(8).TotalSeconds 
     $sqlConnectionTimeoutSeconds = [int] [TimeSpan]::FromMinutes(2).TotalSeconds
 
-    # sql query includes a 1 min wait for reasonable certainty that the database is ready.
-    $sqlQuery = "
-WAITFOR DELAY '00:01:00'
+    
 
+    $sqlQuery = "
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

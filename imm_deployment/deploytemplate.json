@@ -30,26 +30,6 @@
                 "description": "The password to use for the application's connections to the database server."
             }
         },
-        "siteName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "Website Name"
-    		}
-    	},
-        "location": {
-            "type": "string",
-            "allowedValues": [
-                "West US",
-                "East US",
-                "Central US",
-                "North Europe"
-            ],
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "The Azure region in which these resources will be deployed."
-            }
-        },
     	"tenantId": {
     		"type": "string",
     		"metadata": {
@@ -71,6 +51,9 @@
         }
     },
     "variables": {
+        "location": "[resourceGroup().location]",
+        "siteName": "[concat('sqlinj-', resourceGroup().name)]",
+
         "defaultSqlServerName": "[concat('contososerv', uniqueString(resourceGroup().id))]",
         "defaultSqlDatabaseName": "Store",
         "defaultSqlDatabaseCollation": "SQL_Latin1_General_CP1_CI_AS",
@@ -98,7 +81,7 @@
         {
             "name": "[variables('defaultSqlServerName')]",
             "type": "Microsoft.Sql/servers",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "apiVersion": "2014-04-01-preview",
             "properties": {
                 "administratorLogin": "[parameters('administratorLogin')]",
@@ -111,7 +94,7 @@
     			  "dependsOn": [
     				"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]"
     			  ],
-    			  "location": "[parameters('location')]",
+    			  "location": "[variables('location')]",
     			  "name": "AllowAllAzureIps",
     			  "properties": {
     				"endIpAddress": "0.0.0.0",
@@ -124,7 +107,7 @@
     			  "dependsOn": [
     				"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]"
     			  ],
-    			  "location": "[parameters('location')]",
+    			  "location": "[variables('location')]",
     			  "name": "AllowLocalMachine",
     			  "properties": {
     				"endIpAddress": "[parameters('externalIpAddress')]",
@@ -135,7 +118,7 @@
     			{
     			  "name": "[variables('defaultSqlDatabaseName')]",
     			  "type": "databases",
-    			  "location": "[parameters('location')]",
+    			  "location": "[variables('location')]",
     			  "apiVersion": "2014-04-01-preview",
     			  "dependsOn": [
     				"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]"
@@ -185,7 +168,7 @@
             "apiVersion": "2015-06-15",
             "name": "[variables('defaultStorageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "accountType": "[variables('defaultStorageAccountType')]"
             }
@@ -195,7 +178,7 @@
           "comments": "Key vault access policies are configured in post-deploy steps",
     	  "name": "[variables('defaultKeyVaultName')]",
     	  "apiVersion": "2015-06-01",
-    	  "location": "[parameters('location')]",
+    	  "location": "[variables('location')]",
     	  "properties": {
     		"enabledForDeployment": "[variables('enableVaultForDeployment')]",
     		"enabledForTemplateDeployment": "[variables('enableVaultforTemplateDeployment')]",
@@ -213,7 +196,7 @@
             "apiVersion": "2014-06-01",
             "name": "[variables('defaultAppServicePlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "name": "[variables('defaultAppServicePlanName')]",
                 "sku": "[variables('defaultAppServicePlanSku')]",
@@ -223,9 +206,9 @@
         },
         {
             "apiVersion": "2015-08-01",
-            "name": "[parameters('siteName')]",
+            "name": "[variables('siteName')]",
             "type": "Microsoft.Web/sites",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', variables('defaultAppServicePlanName'))]",
     			"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]",
@@ -235,7 +218,7 @@
                 "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('defaultAppServicePlanName'))]": "empty"
             },
             "properties": {
-                "name": "[parameters('siteName')]",
+                "name": "[variables('siteName')]",
                 "serverFarmId": "[variables('defaultAppServicePlanName')]",
     			"siteConfig": {
                    "AlwaysOn": true
@@ -247,7 +230,7 @@
                     "name": "[variables('siteDeploymentName')]",
                     "type": "extensions",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]",
+                        "[concat('Microsoft.Web/sites/', variables('siteName'))]",
                         "[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'), '/databases/',variables('defaultSqlDatabaseName'))]"
                     ],
                     "properties": {
@@ -262,8 +245,8 @@
                     "type": "config",
                     "name": "connectionstrings",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'))]",
-                        "[concat('Microsoft.Web/sites/', parameters('siteName'), '/extensions/', variables('siteDeploymentName'))]"
+                        "[concat('Microsoft.Web/sites/', variables('siteName'))]",
+                        "[concat('Microsoft.Web/sites/', variables('siteName'), '/extensions/', variables('siteDeploymentName'))]"
                     ],
                     "properties": {
                         "DefaultConnection": {
@@ -298,7 +281,7 @@
         },
         "region": {
             "type": "string",
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
         },
         "keyVaultName": {
             "type": "string",
@@ -306,7 +289,7 @@
         },
         "siteName": {
             "type": "string",
-            "value": "[parameters('siteName')]"
+            "value": "[variables('siteName')]"
         }
     }
 }

@@ -5,7 +5,7 @@
 # - Invoke the post-deploy script.
 #
 
-$resourceGroupName = "sql-security-005"
+$resourceGroupName = "sql-security-007"
 $msolcred = Get-Credential
 $tenantId = Get-AzureRmSubscription | Select-Object -ExpandProperty TenantId
 $subscriptionId = Get-AzureRmSubscription | Select-Object -ExpandProperty SubscriptionId
