@@ -84,7 +84,7 @@ Write-Host 'Building web app'
 tool_nuget restore '..\src' -noninteractive
 
 $log_path = (join-path $out_dir "msbuild.log")
-tool_msbuild '..\src\ContosoOnlineBikeStore\ContosoOnlineBikeStore.csproj' /p:Platform="AnyCPU" /T:Package /P:PackageLocation="$out_dir" /P:_PackageTempDir="$temp_dir" /fileLoggerParameters:LogFile="$log_path"
+tool_msbuild '..\src\ContosoOnlineBikeStore\ContosoOnlineBikeStore.csproj' /p:Platform="AnyCPU" /T:Package /P:PackageLocation="$out_dir" /P:_PackageTempDir="$temp_dir" /fileLoggerParameters:LogFile="$log_path" 
 
 # Scan for build error
 if (-not (test-path $log_path)) {
