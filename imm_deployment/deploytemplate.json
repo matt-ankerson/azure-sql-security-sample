@@ -41,13 +41,6 @@
             "metadata": {
     		"description": "Location of the web deploy package."
     		}
-        },
-        "externalIpAddress": {
-            "type": "string",
-            "defaultValue": "0.0.0.0",
-            "metadata": {
-    		"description": "External IP address of the machine which is going to run the post-deployment script."
-    		}
         }
     },
     "variables": {
@@ -99,19 +92,6 @@
     			  "properties": {
     				"endIpAddress": "0.0.0.0",
     				"startIpAddress": "0.0.0.0"
-    			  },
-    			  "type": "firewallrules"
-    			},
-                {
-    			  "apiVersion": "2014-04-01-preview",
-    			  "dependsOn": [
-    				"[concat('Microsoft.Sql/servers/', variables('defaultSqlServerName'))]"
-    			  ],
-    			  "location": "[variables('location')]",
-    			  "name": "AllowLocalMachine",
-    			  "properties": {
-    				"endIpAddress": "[parameters('externalIpAddress')]",
-    				"startIpAddress": "[parameters('externalIpAddress')]"
     			  },
     			  "type": "firewallrules"
     			},
