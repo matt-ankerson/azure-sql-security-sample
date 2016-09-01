@@ -4,6 +4,7 @@
 # - Push out the deployment template.
 # - Invoke the post-deploy script.
 #
+# This script should not be included as part of the actual immersion deployment.
 
 $resourceGroupName = "sql-security-007"
 $msolcred = Get-Credential
